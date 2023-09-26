@@ -1,0 +1,70 @@
+/*La Unidad Curiosa de Monitorizacion (UCM) se encarga de leer los datos proporcionados por una serie de sensores y enviar con cierta periodicidad los datos
+obtenidos y procesados a los usuarios que se han registrado previamente.
+La UCM admite que los usuarios se registren proporcionando un Identificador, un numero entre 103 y 109 que identifica de forma ´unica al usuario, y un Periodo, 
+el intervalo de tiempo que transcurrira entre dos env´ıos consecutivos de informacion a ese usuario (entre 1 y 5.000). 
+Es decir, cuando hayan pasado Periodo segundos desde que el usuario se registro, este recibira la informaci´on de la UCM por primera
+vez; y despues recibir´a la informacion cada Periodo segundos.
+Acaban de registrarse varios usuarios, todos con identificadores dintintos. ¿Podr´ıas decir a qui´enes
+ir´an dirigidos los K primeros env´ıos de informaci´on? Si dos o m´as usuarios tienen que recibir la informaci´on al mismo tiempo, los env´ıos se realizan en orden creciente de sus identificadores de usuario.*/
+
+#include <iostream>
+#include <fstream>
+#include <queue>
+using namespace std;
+
+typedef struct {
+    int momento; //cuando le toca
+    int id; //id del cliente
+    int periodo; //tiempo entre consultas
+}registro;
+
+bool operator<(registro const& a, registro const& b) {
+    return b.momento < a.momento || (a.momento == b.momento && b.id < a.id);
+}
+
+bool resuelveCaso() {
+    int num = -1;
+    cin >> num;
+
+    if (num == 0) return false;
+
+    priority_queue<registro> cola; //creamos cola
+
+    for (int i = 0; i < num; i++) {
+        int idU, per;
+        cin >> idU >> per;
+        cola.push({ per, idU,per }); //meto los datos en la cola
+    }
+
+    int envios;
+    cin >> envios;
+
+    while (envios--) {
+        auto e = cola.top(); cola.pop();
+        cout << e.id << "\n"; //cambiar por \n
+        e.momento += e.periodo;
+        cola.push(e);
+    }
+
+    cout << "---\n";
+    
+
+    return true;
+}
+
+int main() {
+    // ajustes para que cin extraiga directamente de un fichero
+#ifndef DOMJUDGE
+    std::ifstream in("casos.txt");
+    auto cinbuf = std::cin.rdbuf(in.rdbuf());
+#endif
+
+    while (resuelveCaso());
+
+    // para dejar todo como estaba al principio
+#ifndef DOMJUDGE
+    std::cin.rdbuf(cinbuf);
+    system("PAUSE");
+#endif
+    return 0;
+}
