@@ -1,0 +1,80 @@
+
+/*En el Hospital ACR (Aqu´ı Curamos R´apido) se han puesto a mejorar las Urgencias
+para que los enfermos que llegan con dolencias m´as graves sean atendidos antes que
+los dem´as. Para eso, han comprado una UCM (Unidad de Catalogaci´on M´edica) que
+es capaz de valorar instant´aneamente el estado de un paciente con un n´umero entero
+entre 0 y 1.000.000, donde 0 indica que su dolencia es menor (quiz´a incluso inexistente
+y sea un mero hipocondr´ıaco) y 1.000.000 indica que el enfermo est´a casi caminando
+hacia la luz.
+Por desgracia, la afluencia de enfermos es tal que incluso as´ı es muy complicado
+saber r´apidamente qui´en deber´ıa ser el pr´oximo en ser atendido. No hacen m´as que
+entrar pacientes nuevos a la vez que los m´as graves son atendidos, y no es f´acil mantenerlos ordenados. Cuando un m´edico queda libre, debe ser atendido el enfermo a la espera con una
+valoraci´on m´as grave. Si hay dos pacientes evaluados con la misma gravedad, deber´a ser atendido el que
+m´as tiempo lleve esperando.
+Para ayudar en la tarea de decidir qui´en es el pr´oximo, desde ACR se ha hecho un llamamiento para
+buscar ayuda entre los mejores programadores. ¿Eres t´u uno de ellos?*/
+
+#include <iostream>
+#include <fstream>
+#include <queue>
+using namespace std;
+
+typedef struct {
+    string nombre;
+    int gravedad;
+    int tiempo;
+}paciente;
+
+bool operator<(paciente const& a, paciente const& b) {
+    return b.gravedad > a.gravedad || (a.gravedad == b.gravedad && b.tiempo < a.tiempo); //operator para ordenar la cola segun gravedad y nombre
+}
+
+bool resuelveCaso() {
+
+    // leer los datos de la entrada
+    int num = -1;
+    cin >> num;
+
+    if (num == 0) return false;
+
+    priority_queue<paciente> cola; //creo la cola de prioridad
+
+   
+    for (int i = 0; i < num; i++) {
+        char x;
+        cin >> x;
+
+        if (x == 'I') { //si es un paciente nuevo lo añado a la cola
+            int grav;
+            string nom;
+            cin >> nom >> grav;
+            cola.push({ nom,grav,i }); //apunto al paciente en la cola
+        }
+    
+         else { //si es un evento de medico libre
+            auto e = cola.top(); //guardo en e el elemento(paciente) que se esta curando y lo quito de la cola
+            cout << e.nombre << "\n"; //imprimo el nombre del paciente que se esta curando
+            cola.pop();
+         }
+    }
+   
+    cout << "---\n";
+
+    return true;
+}
+int main() {
+    // ajustes para que cin extraiga directamente de un fichero
+#ifndef DOMJUDGE
+    std::ifstream in("casos.txt");
+    auto cinbuf = std::cin.rdbuf(in.rdbuf());
+#endif
+
+    while (resuelveCaso());
+
+    // para dejar todo como estaba al principio
+#ifndef DOMJUDGE
+    std::cin.rdbuf(cinbuf);
+    system("PAUSE");
+#endif
+    return 0;
+}
