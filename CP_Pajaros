@@ -1,0 +1,73 @@
+#include <iostream>
+#include <fstream>
+#include <queue>
+using namespace std;
+
+//no declaro operator ya que la queue por defecto ya lo ordena como yo quiero 
+
+bool resuelveCaso() {
+    int edadP, parej; //edad del pajaro que va en cabeza y numero de parejas nuevas que se van a incorporar
+    
+   
+    // leer los datos de la entrada
+    cin >> edadP >> parej;
+    int media = edadP; //el centro de la bandada
+
+    if (edadP == 0 && parej == 0) return false;
+
+    // resolver el caso posiblemente llamando a otras funciones
+    priority_queue<int>menores; //cola con los pajaros menores
+    priority_queue<int, vector<int>, greater<int>>mayores; //hago que sea una cola de mayores
+  
+    int aux; //variable auxiliar para guardarme las edades que van a entrar
+
+    // escribir la solución
+    for (int i = 0; i<2*parej; i++) {
+        cin >> aux;
+        if (aux< media) {
+            menores.push(aux); //si es menor que el que va en cabeza lo meto en la cola de menores
+            if (menores.size() - mayores.size() > 0) { //si hay mas menores que mayores entonces el que va en cabeza esta en esta cola (el mas mayor de los menores)
+                mayores.push(media);//paso el valor a los mayores
+                media = menores.top(); //y ahora mi media es el mayor de los menores
+                menores.pop();
+            }
+        }
+        else {
+            mayores.push(aux); //si es mayor lo meto en la cola de mayores
+            if ( mayores.size() - menores.size() > 1) { //si hay mas mayores que menores entonces el que va en cabeza es el menor de los mayores
+                menores.push(media); //paso el valor a los menores
+                media = mayores.top(); //y me quedo con el menor
+                mayores.pop();
+            }
+
+        }
+
+        if (i%2 == 1) {
+            cout << media << " ";
+        }
+
+    }
+    cout << "\n";
+
+    return true;
+}
+
+//@ </answer>
+//  Lo que se escriba dejado de esta línea ya no forma parte de la solución.
+
+int main() {
+    // ajustes para que cin extraiga directamente de un fichero
+#ifndef DOMJUDGE
+    std::ifstream in("casos.txt");
+    auto cinbuf = std::cin.rdbuf(in.rdbuf());
+#endif
+
+    while (resuelveCaso());
+
+    // para dejar todo como estaba al principio
+#ifndef DOMJUDGE
+    std::cin.rdbuf(cinbuf);
+    system("PAUSE");
+#endif
+    return 0;
+}
